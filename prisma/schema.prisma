@@ -8,3 +8,30 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+model Users {
+  id Int @id @default(autoincrement())
+  name String 
+  age Int
+  role Role
+  address Adress[]
+  birthAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Adress {
+  id Int @id @default(autoincrement())
+  street String
+  numberHouse String
+  userId Int @unique
+  complement String
+  streetFullName String
+
+  User Users @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
+}

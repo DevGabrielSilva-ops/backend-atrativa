@@ -1,7 +1,6 @@
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -9,29 +8,21 @@ datasource db {
   provider = "mysql"
 }
 
-model Users {
-  id Int @id @default(autoincrement())
-  name String 
-  age Int
-  role Role
-  address Adress[]
-  birthAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+
+
+model users {
+  id        Int        @id @default(autoincrement())
+  name      String
+  age       Int
+  email     String
+  password  String
+  role      users_role
+  birthAt   DateTime
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
 }
 
-model Adress {
-  id Int @id @default(autoincrement())
-  street String
-  numberHouse String
-  userId Int @unique
-  complement String
-  streetFullName String
-
-  User Users @relation(fields: [userId], references: [id])
-}
-
-enum Role {
+enum users_role {
   ADMIN
   USER
 }

@@ -2,31 +2,40 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService){}
- create(createUserDto: CreateUserDto) {
-  
-  
-  const { address, ...userData } = createUserDto;
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
-  return this.prisma.users.create({
-    data: {
-      ...userData,
-      
-      
-      address: {
-        create: {
-          street: address.street,
-          numberHouse: address.numberHouse,
-          complement: address.complement,
-          streetFullName: address.streetFullName,
-        }
-      }
-    }
-  });
-}
+  async create({
+    age,
+    birthAt,
+    createdAt,
+    email,
+    name,
+    password,
+    role,
+    updatedAt,
+  }: CreateUserDto) {
+    const senhaHash = await bcrypt.hash(password,15);
+    
+
+    return this.prisma.users.create({
+      data: {
+        age,
+        birthAt,
+        createdAt,
+        email,
+        name,
+        role,
+        updatedAt,
+        password: senhaHash,
+      },
+    });
+  }
 
   findAll() {
     return this.prisma.users.findMany();
@@ -34,33 +43,26 @@ export class UsersService {
 
   findOne(id: number) {
     return this.prisma.users.findUnique({
-      where: {id}
+      where: { id },
     });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-
-    const { address, ...userData } = updateUserDto;
-
     return this.prisma.users.update({
-      where: {id},
-      data: {
-      ...userData,
-      
-      
-      address: {
-        create: {
-          street: address!.street,
-          numberHouse: address!.numberHouse,
-          complement: address!.complement,
-          streetFullName: address!.streetFullName,
-        }
-      }
-    }
+      where: { id },
+      data: updateUserDto,
     });
   }
 
+  async findByEmail(email:string){
+      return await this.prisma.users.findFirst({
+        where: {
+          email: email
+        }
+      })
+  }
+
   remove(id: number) {
-    return this.prisma.users.delete({where: {id}});
+    return this.prisma.users.delete({ where: { id } });
   }
 }

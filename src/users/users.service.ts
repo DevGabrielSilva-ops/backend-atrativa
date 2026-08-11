@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -60,6 +60,34 @@ export class UsersService {
           email: email
         }
       })
+  }
+
+  async forgetPassword(email:string,password,Newpassword:string){
+      
+      const Hashedpassword = await bcrypt.hash(Newpassword,15)
+    
+      const User = await this.findByEmail(email)
+
+      if(!User){
+        throw new ConflictException("user is not exist")
+      }
+
+      const passworIsValid = await bcrypt.compare(password,User.password)
+      
+      if(!passworIsValid){
+        throw new ForbiddenException("password not valid")
+      }
+
+      const id = Number(User?.id)
+      
+      await this.prisma.users.update({
+        where: {id},
+        data: {
+          password: Hashedpassword
+        }
+      })
+
+      return {message:'Password updated sucess'}
   }
 
   remove(id: number) {

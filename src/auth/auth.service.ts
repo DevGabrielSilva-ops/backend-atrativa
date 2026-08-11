@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from "./dto/login.dto";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { ForgetPasswordDto } from "./dto/forget.dto";
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
         private readonly Jwt: JwtService,
     ){}
 
-   async login({email,password}:LoginDto){
+    async login({email,password}:LoginDto){
 
        const Isemail = await this.user.findByEmail(email)
 
@@ -35,6 +36,7 @@ export class AuthService {
         return token
     }
 
+    
     async register({email,...data}: CreateUserDto) {
         
         const IsUser = await this.user.findByEmail(email)
@@ -53,6 +55,11 @@ export class AuthService {
         })
 
         return token
-
     }
+
+    async forgetPassword({email,password, Newpassword}:ForgetPasswordDto) {
+        this.user.forgetPassword(email,password, Newpassword)
+    }
+
+    
 }

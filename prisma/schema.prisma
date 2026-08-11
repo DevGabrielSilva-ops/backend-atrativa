@@ -22,7 +22,22 @@ model users {
   updatedAt DateTime   @default(now())
 }
 
+model Products {
+  id  Int @id @default(autoincrement())
+  bar_code String
+  name String
+  qtd Int
+  price Int
+  type type_product
+}
+
 enum users_role {
   ADMIN
   USER
+}
+
+enum type_product {
+  ROUPAS
+  ACESSÓRIOS
+  CASA
 }
